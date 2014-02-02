@@ -108,9 +108,23 @@ module.exports = function(grunt) {
                 },
                 expand: true,
                 cwd: 'dist/',
-                src: ['**','assets/*'],
+                src: ['**', 'assets/*'],
                 dest: '/'
 
+            }
+        },
+        mkdir: {
+            all: {
+                options: {
+                    create: ['public/', 'dist/assets/images', 'dist/assets/js', 'build/assets/images', 'build/assets/js']
+                },
+            },
+        },
+        browserify: {
+            dist: {
+                files: {
+                    'dist/assets/js/module.js': ['build/js/**/*.js']
+                }
             }
         }
 
@@ -122,7 +136,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-rename');
     grunt.loadNpmTasks('grunt-http-server');
     grunt.loadNpmTasks('grunt-contrib-compress');
-
+    grunt.loadNpmTasks('grunt-mkdir');
+    grunt.loadNpmTasks('grunt-browserify');
 
 
     grunt.task.registerTask('buildCF', 'creating CF build files', function(arg1) {
@@ -150,6 +165,7 @@ module.exports = function(grunt) {
 
             grunt.option("cfFile", arg1);
             grunt.task.run('jshint');
+            grunt.task.run('browserify');
             grunt.task.run('execute:createDist');
 
 
@@ -157,6 +173,9 @@ module.exports = function(grunt) {
     });
 
     grunt.task.registerTask('uploadCF', ['compress', 'http-server:dev']);
+
+
+    grunt.task.registerTask('initCF', ['mkdir']);
 
 
 };
